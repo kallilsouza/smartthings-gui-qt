@@ -22,6 +22,9 @@ logging.basicConfig(
 LOGGER = logging.getLogger(__name__)
 
 
+SMARTTHINGS_PATH = os.path.expanduser("~/smartthings")
+
+
 class DeviceStatusThread(QThread):
     status_fetched = pyqtSignal(str, dict)  # Signal to send device_id and status_data
 
@@ -73,9 +76,8 @@ class SmartThingsGUI(QMainWindow):
 
     def load_devices(self):
         try:
-            smartthings_path = os.path.expanduser("~/smartthings")
             result = subprocess.run(
-                [smartthings_path, "devices"],
+                [SMARTTHINGS_PATH, "devices"],
                 capture_output=True,
                 text=True,
                 check=True,
@@ -136,8 +138,7 @@ class SmartThingsGUI(QMainWindow):
             LOGGER.error("Error loading devices: %s", e)
 
     def load_device_status(self, device_id):
-        smartthings_path = os.path.expanduser("~/smartthings")
-        thread = DeviceStatusThread(smartthings_path, device_id, self)
+        thread = DeviceStatusThread(SMARTTHINGS_PATH, device_id, self)
         thread.status_fetched.connect(self.update_device_status)
         thread.finished.connect(
             lambda t=thread: self.remove_thread(t)
@@ -147,7 +148,6 @@ class SmartThingsGUI(QMainWindow):
 
     def load_devices_status(self):
         try:
-            smartthings_path = os.path.expanduser("~/smartthings")
             for device in self.loaded_devices:
                 device_id = device.get("deviceId", None)
                 if not device_id:
@@ -212,9 +212,8 @@ class SmartThingsGUI(QMainWindow):
 
     def send_device_command(self, device_id, action, value):
         try:
-            smartthings_path = os.path.expanduser("~/smartthings")
             result = subprocess.run(
-                [smartthings_path, "devices:commands", device_id, f"{action}:{value}"],
+                [SMARTTHINGS_PATH, "devices:commands", device_id, f"{action}:{value}"],
                 capture_output=True,
                 text=True,
                 check=True,
