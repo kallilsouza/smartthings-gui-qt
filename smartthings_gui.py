@@ -135,6 +135,16 @@ class SmartThingsGUI(QMainWindow):
             self.main_title.setText(f"Error loading devices: {e}")
             LOGGER.error("Error loading devices: %s", e)
 
+    def load_device_status(self, device_id):
+        smartthings_path = os.path.expanduser("~/smartthings")
+        thread = DeviceStatusThread(smartthings_path, device_id, self)
+        thread.status_fetched.connect(self.update_device_status)
+        thread.finished.connect(
+            lambda t=thread: self.remove_thread(t)
+        )  # Safely remove thread
+        self.threads.append(thread)  # Keep a reference to the thread
+        thread.start()
+
     def load_devices_status(self):
         try:
             smartthings_path = os.path.expanduser("~/smartthings")
@@ -143,14 +153,7 @@ class SmartThingsGUI(QMainWindow):
                 if not device_id:
                     continue
 
-                # Create and start a thread for each device
-                thread = DeviceStatusThread(smartthings_path, device_id, self)
-                thread.status_fetched.connect(self.update_device_status)
-                thread.finished.connect(
-                    lambda t=thread: self.remove_thread(t)
-                )  # Safely remove thread
-                self.threads.append(thread)  # Keep a reference to the thread
-                thread.start()
+                self.load_device_status(device_id)
 
         except Exception as e:
             LOGGER.error("Error loading device status: %s", e)
@@ -217,6 +220,8 @@ class SmartThingsGUI(QMainWindow):
                 check=True,
             )
             LOGGER.info("Device toggled successfully: %s", device_id)
+
+            self.load_device_status(device_id)
 
         except Exception as e:
             LOGGER.error("Error toggling device: %s", e)
