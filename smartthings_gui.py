@@ -173,10 +173,11 @@ class SmartThingsGUI(QMainWindow):
             )
 
             button_name = f"{device_id}_toggle_button"
-            if getattr(self, button_name, None):
+            button = getattr(self, button_name, None)
+            if button:
                 if current_status == "offline":
-                    getattr(self, button_name).setText("Offline")
-                    getattr(self, button_name).setEnabled(False)
+                    button.setText("Offline")
+                    button.setEnabled(False)
                 elif current_status == "online":
                     switch_data = (
                         status_data.get("components", {})
@@ -185,17 +186,17 @@ class SmartThingsGUI(QMainWindow):
                         .get("switch", {})
                     )
                     if switch_data.get("value") == "on":
-                        getattr(self, button_name).setText("Turn Off")
-                        getattr(self, button_name).clicked.connect(
+                        button.setText("Turn Off")
+                        button.clicked.connect(
                             lambda: self.send_device_command(device_id, "switch", "off")
                         )
-                        getattr(self, button_name).setEnabled(True)
+                        button.setEnabled(True)
                     else:
-                        getattr(self, button_name).setText("Turn On")
-                        getattr(self, button_name).clicked.connect(
+                        button.setText("Turn On")
+                        button.clicked.connect(
                             lambda: self.send_device_command(device_id, "switch", "on")
                         )
-                        getattr(self, button_name).setEnabled(True)
+                        button.setEnabled(True)
         except Exception as e:
             LOGGER.error("Error updating device status: %s", e)
 
@@ -216,6 +217,7 @@ class SmartThingsGUI(QMainWindow):
                 check=True,
             )
             LOGGER.info("Device toggled successfully: %s", device_id)
+
         except Exception as e:
             LOGGER.error("Error toggling device: %s", e)
 
