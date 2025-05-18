@@ -43,6 +43,7 @@ class SmartThingsGUI(QMainWindow):
         main_layout.addWidget(self.main_title)
 
         self.load_devices()
+        self.load_device_status()
 
     def load_devices(self):
         try:
@@ -92,7 +93,9 @@ class SmartThingsGUI(QMainWindow):
                 device_layout = QHBoxLayout(device_widget)
 
                 label = QLabel(device_label)
-                toggle_button = QPushButton("Toggle")
+                toggle_button = QPushButton("Loading status...")
+                toggle_button.setEnabled(False)
+                setattr(self, f"{device_id}_toggle_button", toggle_button)
 
                 device_layout.addWidget(label)
                 device_layout.addWidget(toggle_button)
@@ -105,6 +108,58 @@ class SmartThingsGUI(QMainWindow):
         except Exception as e:
             self.main_title.setText(f"Error loading devices: {e}")
             LOGGER.error("Error loading devices: %s", e)
+
+    def load_device_status(self):
+        try:
+            smartthings_path = os.path.expanduser("~/smartthings")
+            for device in self.loaded_devices:
+                device_id = device.get("deviceId", None)
+                if not device_id:
+                    continue
+
+                result = subprocess.run(
+                    [smartthings_path, "devices:status", device_id],
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
+
+                status_data = json.loads(result.stdout)
+                LOGGER.info("Status loaded successfully for device: %s", device_id)
+
+                current_status = (
+                    status_data.get("components", {})
+                    .get("main", {})
+                    .get("healthCheck", {})
+                    .get("DeviceWatch-DeviceStatus", {})
+                    .get("value")
+                )
+
+                # Update the button text based on the status
+                button_name = f"{device_id}_toggle_button"
+
+                if getattr(self, button_name, None):
+                    if current_status == "offline":
+                        getattr(self, button_name).setEnabled(False)
+                        getattr(self, button_name).setText("Offline")
+                        getattr(self, button_name).setEnabled(False)
+                    elif current_status == "online":
+                        switch_data = (
+                            status_data.get("components", {})
+                            .get("main", {})
+                            .get("switch", {})
+                            .get("switch", {})
+                        )
+                        if switch_data.get("value") == "on":
+                            getattr(self, button_name).setText("Turn Off")
+                            getattr(self, button_name).setEnabled(True)
+                        else:
+                            print(switch_data)
+                            getattr(self, button_name).setText("Turn On")
+                            getattr(self, button_name).setEnabled(True)
+
+        except Exception as e:
+            LOGGER.error("Error loading device status: %s", e)
 
 
 def main():
