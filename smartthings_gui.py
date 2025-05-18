@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import (
     QLabel,
     QWidget,
     QScrollArea,
+    QDesktopWidget,
 )
 from PyQt5.QtCore import Qt, QTimer, QThread, pyqtSignal
 import os
@@ -61,7 +62,13 @@ class SmartThingsGUI(QMainWindow):
 
     def init_ui(self):
         self.setWindowTitle("SmartThings")
-        self.setGeometry(300, 300, 300, 200)
+        self.setGeometry(500, 500, 300, 300)
+
+        # Center the window on the screen
+        screen_geometry = QDesktopWidget().availableGeometry().center()
+        frame_geometry = self.frameGeometry()
+        frame_geometry.moveCenter(screen_geometry)
+        self.move(frame_geometry.topLeft())
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
