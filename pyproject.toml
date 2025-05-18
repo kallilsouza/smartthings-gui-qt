@@ -1,0 +1,17 @@
+[project]
+name = "smartthings-gui-qt"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Kallil Souza dos Santos",email = "kallilsouza@hotmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pyqt5 (>=5.15.11,<6.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
