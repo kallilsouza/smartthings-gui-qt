@@ -69,6 +69,7 @@ class SmartThingsGUI(QMainWindow):
         main_layout.addWidget(self.main_title)
 
         self.load_devices()
+        QTimer.singleShot(0, self.load_devices_status)
 
     def load_devices(self):
         try:
