@@ -1,3 +1,4 @@
+from contextlib import suppress
 import json
 import logging
 import sys
@@ -185,6 +186,9 @@ class SmartThingsGUI(QMainWindow):
             button_name = f"{device_id}_toggle_button"
             button = getattr(self, button_name, None)
             if button:
+                with suppress(Exception):
+                    button.clicked.disconnect()
+
                 if current_status == "offline":
                     button.setText("Offline")
                     button.setEnabled(False)
