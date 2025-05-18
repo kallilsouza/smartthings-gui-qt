@@ -186,9 +186,15 @@ class SmartThingsGUI(QMainWindow):
                     )
                     if switch_data.get("value") == "on":
                         getattr(self, button_name).setText("Turn Off")
+                        getattr(self, button_name).clicked.connect(
+                            lambda: self.send_device_command(device_id, "switch", "off")
+                        )
                         getattr(self, button_name).setEnabled(True)
                     else:
                         getattr(self, button_name).setText("Turn On")
+                        getattr(self, button_name).clicked.connect(
+                            lambda: self.send_device_command(device_id, "switch", "on")
+                        )
                         getattr(self, button_name).setEnabled(True)
         except Exception as e:
             LOGGER.error("Error updating device status: %s", e)
@@ -199,6 +205,19 @@ class SmartThingsGUI(QMainWindow):
             thread.quit()
             thread.wait()
         event.accept()
+
+    def send_device_command(self, device_id, action, value):
+        try:
+            smartthings_path = os.path.expanduser("~/smartthings")
+            result = subprocess.run(
+                [smartthings_path, "devices:commands", device_id, f"{action}:{value}"],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            LOGGER.info("Device toggled successfully: %s", device_id)
+        except Exception as e:
+            LOGGER.error("Error toggling device: %s", e)
 
 
 def main():
