@@ -173,7 +173,7 @@ class SmartThingsGUI(QMainWindow):
 
     def update_device_status(self, device_id, status_data):
         try:
-            LOGGER.info("Status loaded successfully for device: %s", device_id)
+            LOGGER.info("Updating status for device: %s", device_id)
 
             current_status = (
                 status_data.get("components", {})
