@@ -1,6 +1,8 @@
 # SmartThings GUI (Qt)
 SmartThings GUI (Qt) is a simple graphical interface for interacting with SmartThings on Linux, built with Qt and Python. I have developed it for personal use, but you can use it as a GUI alternative to the command-line interface.
 
+![Screenshot from 2025-05-18 08-22-06](https://github.com/user-attachments/assets/9a01eb44-dee9-4299-9e9a-ad24e7a413dc)
+
 ## Prerequisites
 Before running the app, ensure you have the following installed:
 
