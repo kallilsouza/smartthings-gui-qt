@@ -30,6 +30,31 @@ Run the application:
 poetry run python smartthings_gui.py
 ```
 
+## Desktop entry
+You can also create a desktop entry to run it without even opening your terminal.
+
+Create a file like smartthings-gui.desktop in your ~/.local/share/applications/ directory
+```bash
+nano ~/.local/share/applications/smartthings-gui.desktop
+```
+
+Adapt this and paste to it:
+```bash
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=SmartThings
+Comment=Launch SmartThings GUI (Qt)
+Exec=bash -c "cd /path/to/project/smartthings-gui-qt && /
+path/to/poetry/.local/bin/poetry run python smartthings_gui.py"
+Icon=/path/to/icon/smartthings-logo.png
+Terminal=false
+Categories=Utility;
+StartupWMClass=smartthings_gui.py
+```
+The icon is optional. You must download one for this.
+If you don't want it, just delete the line that starts with "Icon=".
+
 ## Notes
 ### Authentication
 You must be authenticated with SmartThings CLI before using the GUI.
